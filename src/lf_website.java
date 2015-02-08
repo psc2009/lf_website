@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.ServerSocket;
 
+
 public class lf_website {
 
 	public static void main(String[] args) throws InterruptedException {
@@ -21,7 +22,7 @@ public class lf_website {
 			public void run() {
 				ServerSocket server;
 				try {
-					server =new ServerSocket(9990);
+					server = new ServerSocket(9990);
 					while (true) {
 						Socket client = server.accept();
 						System.out.println("Accepted a pdf request, it is from " + client.getInetAddress()+ " : " + client.getPort() + "." );

@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 
 public class Telnet implements Runnable {
 	Socket client;
@@ -15,11 +16,12 @@ public class Telnet implements Runnable {
 	}
 	
 	public void run() {
-		BufferedReader input;
-		PrintWriter output;
+		BufferedReader input = null;
+		PrintWriter output = null;
 		InputStream cmdInput ;
 		String cmd;
 		try {
+			client.setSoTimeout(30000);
 			input = new BufferedReader(new InputStreamReader(client.getInputStream()));
 			output = new PrintWriter(client.getOutputStream(), true);
 			output.println("请输入密码:");
@@ -52,12 +54,20 @@ public class Telnet implements Runnable {
 					}
 				}
 			} while (cmd!=null && !cmd.equals("exit"));
-			input.close();
-			output.close();
-			client.close();
-			System.out.println("链接结束.\n"); 
+		} catch (SocketTimeoutException e) {
+			System.out.println("Client["+client.getInetAddress()+"] 链接超时");
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			try {
+				input.close();
+				output.close();
+				client.close();
+				System.out.println("链接结束.\n"); 
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 }
